@@ -4,56 +4,6 @@ library(ggplot2)
 library(cowplot)
 library(abc)
 
-deprecated_test=function(){
-	require(abc.data)
-	data(human)
-	stat.voight
-	TOTAL.REP<<-500
-	nREP<<-10000
-	nSIM<<-TOTAL.REP*nREP
-	
-	data.params.sim=read.table(paste('Rdata/params.sim.txt',sep=''),header=F)
-	data.params.abc=read.table(paste('Rdata/params.abc.txt',sep=''),header=F)
-	data.params=rbind(data.params.sim,data.params.abc)
-	for (row in 1:nrow(data.params)){
-		assign(as.character(data.params[row,1]),data.params[row,2],envir=.GlobalEnv)
-	}
-	Ne.vec<<-unique(as.character(c(Ne_1,Ne_2,Ne_3)))
-	obs.sumstat<<-c(GB_mean,MT_mean,Y_mean)
-	tol.vec<<-as.character(c(0.01,0.001))
-	color.model<<-c('neutral'='grey60','mnsel'='dodgerblue2','zmsel'='firebrick3','bothsel'='purple2')
-
-	model.vec<<-c('neutral','mnsel','zmsel','bothsel')
-	tMATRIX=list()
-	tPARAMS=list()
-	tSUMSTAT=list()
-	tSURVIVAL=c()
-	for (Ne in Ne.vec){
-		tMATRIX[[Ne]]=list()
-		tPARAMS[[Ne]]=list()
-		tSUMSTAT[[Ne]]=list()
-		for (model in model.vec){
-			temp.list=list()
-			rep=1
-			while (rep <= TOTAL.REP){ 
-				infile=paste('Rdata/',model,'.Ne',Ne,'.rep',rep,'.rda',sep='')
-				if (file.exists(infile)){load(infile);temp.list[[rep]]=tSUMMARY}
-				rep=rep+1
-			}
-			temp.matrix=do.call('rbind',temp.list)
-			temp.survived=temp.matrix[which(temp.matrix[,7]!=-1),]
-			tMATRIX[[Ne]][[model]]=temp.survived
-			tPARAMS[[Ne]][[model]]=temp.survived[,1:5]
-			tSUMSTAT[[Ne]][[model]]=temp.survived[,8:ncol(temp.survived)]
-		}
-	}
-	
-	print(paste('INFO: ',TOTAL.REP,' replicates loaded',sep=''))
-	tMATRIX<<-tMATRIX
-	tPARAMS<<-tPARAMS
-	tSUMSTAT<<-tSUMSTAT
-	run_abc()
-}
 in_read_params=function(){
 	rm(list=ls())
 	args=commandArgs(trailingOnly=TRUE)
